@@ -241,7 +241,7 @@ must be in ["internal", "bindFlat", "bindDLZ"]')
     }
     exec{ 'add fqdn to /etc/hosts':
       path    => '/bin:/sbin:/usr/bin:/usr/sbin',
-      command => "/bin/sed -i '1s;^;${ip} ${$facts['fqdn']} ${$facts['hostname']}\n;' input",
+      command => 'echo -e "${ip} ${$facts['fqdn']} ${$facts['hostname']}\n$(cat /etc/hosts) > /etc/hosts" input',
       before  => Exec['provisionAD'],
     }   
   }
