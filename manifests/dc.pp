@@ -230,7 +230,7 @@ must be in ["internal", "bindFlat", "bindDLZ"]')
     exec{ 'unlink':
       path    => '/bin:/sbin:/usr/bin:/usr/sbin',
       command     => 'unlink /etc/resolv.conf',
-      require     => [ Exec['provisionAD'], Package]'PyYaml'],
+      require     => [ Exec['provisionAD'], Package['PyYaml'],],
     }
     file {'/etc/resolve.conf':
         ensure  => present,
@@ -252,14 +252,18 @@ must be in ["internal", "bindFlat", "bindDLZ"]')
   }
 
   # This may not be required
-  exec {'Stopsubprocesses':
-    command   => 'systemctl stop smbd nmbd winbind',
-    before    => Exec['provisionAD'],
-  }
-  exec {'disableandmask':
-    command   => 'systemctl disable smbd nmbd winbind; systemctl mask smbd nmbd winbind;',
-    before    => Exec['provisionAD'],
-    require   => Exec['Stopsubprocesses'],
+  if $facts['os']['family'] == 'Debian' {
+    exec {'Stopsubprocesses':
+      path      => '/bin:/sbin:/usr/bin:/usr/sbin',
+      command   => 'systemctl stop smbd nmbd winbind',
+      before    => [ Exec['provisionAD'], Exec['CleanService'], ],
+    }
+    exec {'disableandmask':
+      path      => '/bin:/sbin:/usr/bin:/usr/sbin',
+      command   => 'systemctl disable smbd nmbd winbind; systemctl mask smbd nmbd winbind;',
+      before    => Exec['provisionAD'],
+      require   => Exec['Stopsubprocesses'],
+    }
   }
 
   # Provision the Domain Controler
