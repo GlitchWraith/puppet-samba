@@ -221,11 +221,16 @@ must be in ["internal", "bindFlat", "bindDLZ"]')
     }
   }
 
+  # For operating the dcs in a stand alone manner
+  # systemd-resolved doesnt have to be disabled for operation
+  # but it makes troubleshooting smoother. 
+  # Adding fqdn to hosts is recomended from the samba wiki
+  #
   if $customresolvconf {
     exec{ 'unlink':
       path    => '/bin:/sbin:/usr/bin:/usr/sbin',
       command     => 'unlink /etc/resolv.conf',
-      require     => Exec['provisionAD'], 
+      require     => [ Exec['provisionAD'], Package]'PyYaml'],
     }
     file {'/etc/resolve.conf':
         ensure  => present,
@@ -245,6 +250,18 @@ must be in ["internal", "bindFlat", "bindDLZ"]')
       before  => Exec['provisionAD'],
     }   
   }
+
+  # This may not be required
+  exec {'Stopsubprocesses':
+    command   => 'systemctl stop smbd nmbd winbind',
+    before    => Exec['provisionAD'],
+  }
+  exec {'disableandmask':
+    command   => 'systemctl disable smbd nmbd winbind; systemctl mask smbd nmbd winbind;',
+    before    => Exec['provisionAD'],
+    require   => Exec['Stopsubprocesses'],
+  }
+
   # Provision the Domain Controler
   exec{ 'provisionAD':
     path    => '/bin:/sbin:/usr/bin:/usr/sbin',
