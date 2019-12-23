@@ -1,6 +1,6 @@
 {
   "name": "kakwa-samba",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "author": "kakwa",
   "summary": "Module managing Samba, including Samba as a AD Domain Controller",
   "license": "MIT",
@@ -11,7 +11,7 @@
   "dependencies": [
     {
       "name": "puppetlabs-stdlib",
-      "version_requirement": ">= 3.0.0 < 5.0.0"
+      "version_requirement": ">= 3.0.0 < 6.0.0"
     },
     {
       "name": "herculesteam-augeasproviders_pam",
@@ -44,7 +44,8 @@
       "operatingsystem": "Ubuntu",
       "operatingsystemrelease": [
         "14.04",
-        "16.04"
+        "16.04",
+        "18.04"
       ]
     },
     {

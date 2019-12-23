@@ -57,6 +57,7 @@ class samba::dc(
   $globalabsentoptions                                            = [],
   $netlogonabsentoptions                                          = [],
   $sysvolabsentoptions                                            = [],
+  $kerberos                                                       = false,
   Optional[String] $cleanup                                       = undef,
 ) inherits ::samba::params{
 
@@ -182,6 +183,28 @@ must be in ["internal", "bindFlat", "bindDLZ"]')
     require => Package['SambaDC'],
     notify  => Service['SambaDC'],
   }
+  if $kerberos {
+  # This can probbly be exstended to debain but not tested
+    if $facts['os']['name'] == 'Ubuntu' {
+      package{ 'kerberoskdc':
+        ensure  => 'installed',
+        name    => $::samba::params::packagekrb5,
+        before  => [ Exec['provisionAD'], Exec['CleanService'] ],
+      }
+      package{ 'kerberoskdc':
+        ensure  => 'installed',
+        name    => $::samba::params::packagekrb5pam,
+        before  => [ Exec['provisionAD'], Exec['CleanService'] ],
+      }
+      file{'kerberosConfig':
+        path    => $::samba::params::krbconffile,
+        source  =>"file://${::samba::params::sambakrbgenerated}",
+        before  => [ Exec['provisionAD'], Exec['CleanService'] ],
+
+      }
+      
+    }
+  }
 
   # it's ugly but this should only run in case of an initial provisioning.
   # the debian package and the init script in debian are a bit crappy and
@@ -214,7 +237,7 @@ mv '${targetdir}/etc/smb.conf' '${::samba::params::smbconffile}'",
   service{ 'SambaDC':
     ensure  => 'running',
     name    => $::samba::params::servivesambadc,
-    require => [ Exec['provisionAD'], File['SambaOptsFile'] ],
+    require => [ Exec['provisionAD'], File['SambaOptsFile'], File['kerberosConfig'] ],
     enable  => true,
   }
 
