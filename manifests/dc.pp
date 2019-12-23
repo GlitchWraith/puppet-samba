@@ -213,11 +213,11 @@ must be in ["internal", "bindFlat", "bindDLZ"]')
         name    => $::samba::params::packagekrb5pam,
         before  => [ Exec['provisionAD'],], # Exec['CleanService'] ],
       }
-      #file{'kerberosConfig':
-      #  path    => $::samba::params::krbconffile,
-      #  source  =>"file://${::samba::params::sambakrbgenerated}",
-      #  require  =>  Exec['provisionAD'],
-      #}      
+      file{'kerberosConfig':
+        path    => $::samba::params::krbconffile,
+        source  =>"file://${::samba::params::sambakrbgenerated}",
+        require  =>  Exec['provisionAD'],
+      }      
     }
   }
 
@@ -241,7 +241,7 @@ must be in ["internal", "bindFlat", "bindDLZ"]')
     }
     exec{ 'add fqdn to /etc/hosts':
       path    => '/bin:/sbin:/usr/bin:/usr/sbin',
-      command => "/bin/sed -i '1s;^;${ip} ${$facts['fqdn']} ${$facts['hostname']}\n;' /etc/hosts",,
+      command => "/bin/sed -i \'1s;^;${ip} ${$facts['fqdn']} ${$facts['hostname']}\\n;\' /etc/hosts",
       before  => Exec['provisionAD'],
     }   
   }
@@ -254,7 +254,7 @@ ${::samba::params::sambacmd} domain provision ${hostip} \
 --domain='${domain}' --realm='${realm}' --dns-backend='${sambadns}' \
 --targetdir='${targetdir}' --use-rfc2307 \
 --configfile='${::samba::params::smbconffile}' --server-role='${role}' ${domainprovargs} -d 1 && \
-mv '${targetdir}/etc/smb.conf' '${::samba::params::smbconffile}'\
+mv '${targetdir}/etc/smb.conf' '${::samba::params::smbconffile}' && \
 cp '${::samba::params::sambakrbgenerated}' '${::samba::params::krbconffile}'",
     notify  => Service['SambaDC'],
   }
