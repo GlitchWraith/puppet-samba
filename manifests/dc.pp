@@ -223,7 +223,7 @@ must be in ["internal", "bindFlat", "bindDLZ"]')
 
   if $customresolvconf {
     exec{ 'unlink':
-      command     => 'unlink /etc/resolv.conf',
+      command     => 'rm -f /etc/resolv.conf',
       require     => Exec['provisionAD'], 
     }
     file {'/etc/resolve.conf':
