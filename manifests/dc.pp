@@ -39,6 +39,7 @@
 class samba::dc(
   $domain                                                         = undef,
   $realm                                                          = undef,
+  $strictrealm                                                    = true,
   $dnsbackend                                                     = 'internal',
   Optional[Stdlib::Ip_address] $dnsforwarder                      = undef,
   $adminpassword                                                  = undef,
@@ -109,10 +110,11 @@ must be in ["internal", "bindFlat", "bindDLZ"]')
     fail('realm must be a valid domain')
   }
 
-  $tmparr = split($realm, '[.]')
-  unless $domain == $tmparr[0] {
-    fail('domain must be the fist part of realm, \
-ex: domain="ad" and realm="ad.example.com"')
+  if $strictrealm {
+    $tmparr = split($realm, '[.]')
+    unless $domain == $tmparr[0] {
+      fail('domain must be the fist part of realm, ex: domain="ad" and realm="ad.example.com"')
+    }
   }
 
   if defined(Service['SambaSmb']) or defined(Service['SambaWinBind']){
