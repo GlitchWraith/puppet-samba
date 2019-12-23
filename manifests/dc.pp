@@ -199,7 +199,7 @@ must be in ["internal", "bindFlat", "bindDLZ"]')
       file{'kerberosConfig':
         path    => $::samba::params::krbconffile,
         source  =>"file://${::samba::params::sambakrbgenerated}",
-        before  => [ Exec['provisionAD'], Exec['CleanService'] ],
+        require  =>  Exec['provisionAD']
       }      
     }
   }
@@ -208,7 +208,7 @@ must be in ["internal", "bindFlat", "bindDLZ"]')
   # the debian package and the init script in debian are a bit crappy and
   # don't track the processes properly and start the samba service by
   # default
-  if $cleanup {
+  if $facts['os']['family'] == 'Debian' {
     exec{ 'CleanService':
       path    => '/bin:/sbin:/usr/bin:/usr/sbin',
       unless  => "test -d '${targetdir}/state/sysvol/${realmdowncase}/'",

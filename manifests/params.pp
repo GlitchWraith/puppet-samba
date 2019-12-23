@@ -27,7 +27,7 @@ class samba::params(
           $krbconffile            = '/etc/krb5.conf'
           $packagepyyaml          = 'PyYAML'
       }
-      'Debian': {
+      '': {
           $cleanup                = 'pkill -9 smbd; pkill -9 nmbd; pkill -9 samba; rm -rf /var/run/samba; rm -f /etc/samba/smb.conf ; mv /etc/krb5.conf /etc/krb5.conf.old /bin/true'
           $packagesambadc         = 'samba'
           $packagesambaclassic    = 'samba'
