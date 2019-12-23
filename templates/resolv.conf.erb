@@ -1,0 +1,6 @@
+# Puppet Generated File
+search <%= @realm %>
+namseserver  <%= @ip %>
+<% for @item in @additionalnameservers %>
+nameserver <%= @item %>
+<% end %>

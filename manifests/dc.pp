@@ -213,12 +213,35 @@ must be in ["internal", "bindFlat", "bindDLZ"]')
         name    => $::samba::params::packagekrb5pam,
         before  => [ Exec['provisionAD'],], # Exec['CleanService'] ],
       }
-      file{'kerberosConfig':
-        path    => $::samba::params::krbconffile,
-        source  =>"file://${::samba::params::sambakrbgenerated}",
-        require  =>  Exec['provisionAD'],
-      }      
+      #file{'kerberosConfig':
+      #  path    => $::samba::params::krbconffile,
+      #  source  =>"file://${::samba::params::sambakrbgenerated}",
+      #  require  =>  Exec['provisionAD'],
+      #}      
     }
+  }
+
+  if $customresolvconf {
+    exec{ 'unlink':
+      command     => 'unlink /etc/resolv.conf',
+      require     => Exec['provisionAD'], 
+    }
+    file {'/etc/resolve.conf':
+        ensure  => present,
+        mode    => '0644',
+        content => template("${module_name}/resolv.conf.erb"),
+        require => Exec['provisionAD'],
+    }
+    exec{ 'stop systemd resolve':
+      command   => 'systemctl stop systemd-resolved; systemctl disable systemd-resolved'
+    }
+    exec{ 'add fqdn to /etc/hosts':
+      command => "sed -i '1s;^;$facts['hostname']\n;' input",
+      before  => Exec['provisionAD'],
+
+    }
+
+   
   }
   # Provision the Domain Controler
   exec{ 'provisionAD':
@@ -229,7 +252,8 @@ ${::samba::params::sambacmd} domain provision ${hostip} \
 --domain='${domain}' --realm='${realm}' --dns-backend='${sambadns}' \
 --targetdir='${targetdir}' --use-rfc2307 \
 --configfile='${::samba::params::smbconffile}' --server-role='${role}' ${domainprovargs} -d 1 && \
-mv '${targetdir}/etc/smb.conf' '${::samba::params::smbconffile}'",
+mv '${targetdir}/etc/smb.conf' '${::samba::params::smbconffile}'\
+cp '${::samba::params::sambakrbgenerated}' '${::samba::params::krbconffile}'",
     notify  => Service['SambaDC'],
   }
 

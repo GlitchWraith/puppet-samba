@@ -84,6 +84,10 @@ class samba::params(
   $nsswitchconffile = '/etc/nsswitch.conf'
   $sambacreatehome  = '/usr/local/bin/smb-create-home.sh'
 
+  
+  $customresolvconf = false
+  $additionalnameservers = []
+
   $logclasslist =  [
     'all',     'tdb',     'printdrivers', 'lanman',   'smb',
     'rpc_srv', 'rpc_cli', 'passdb',       'sam',      'auth',
