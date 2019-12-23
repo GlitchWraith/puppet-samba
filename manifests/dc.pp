@@ -183,26 +183,7 @@ must be in ["internal", "bindFlat", "bindDLZ"]')
     require => Package['SambaDC'],
     notify  => Service['SambaDC'],
   }
-  if $kerberos {
-  # This can probbly be exstended to debain but not tested
-    if $facts['os']['name'] == 'Ubuntu' {
-      package{ 'kerberoskdc':
-        ensure  => 'installed',
-        name    => $::samba::params::packagekrb5,
-        before  => [ Exec['provisionAD'], Exec['CleanService'] ],
-      }
-      package{ 'kerberoskdc-pam':
-        ensure  => 'installed',
-        name    => $::samba::params::packagekrb5pam,
-        before  => [ Exec['provisionAD'], Exec['CleanService'] ],
-      }
-      file{'kerberosConfig':
-        path    => $::samba::params::krbconffile,
-        source  =>"file://${::samba::params::sambakrbgenerated}",
-        require  =>  Exec['provisionAD']
-      }      
-    }
-  }
+
 
   # it's ugly but this should only run in case of an initial provisioning.
   # the debian package and the init script in debian are a bit crappy and
@@ -219,6 +200,26 @@ must be in ["internal", "bindFlat", "bindDLZ"]')
     }
   }
 
+  if $kerberos {
+  # This can probbly be exstended to debain but not tested
+    if $facts['os']['name'] == 'Ubuntu' {
+      package{ 'kerberoskdc':
+        ensure  => 'installed',
+        name    => $::samba::params::packagekrb5,
+        before  => [ Exec['provisionAD'], Exec['CleanService'] ],
+      }
+      package{ 'kerberoskdc-pam':
+        ensure  => 'installed',
+        name    => $::samba::params::packagekrb5pam,
+        before  => [ Exec['provisionAD'], Exec['CleanService'] ],
+      }
+      file{'kerberosConfig':
+        path    => $::samba::params::krbconffile,
+        source  =>"file://${::samba::params::sambakrbgenerated}",
+        require  =>  Exec['provisionAD'],
+      }      
+    }
+  }
   # Provision the Domain Controler
   exec{ 'provisionAD':
     path    => '/bin:/sbin:/usr/bin:/usr/sbin',
