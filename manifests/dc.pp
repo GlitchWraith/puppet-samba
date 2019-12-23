@@ -260,7 +260,7 @@ cp '${::samba::params::sambakrbgenerated}' '${::samba::params::krbconffile}'",
   service{ 'SambaDC':
     ensure  => 'running',
     name    => $::samba::params::servivesambadc,
-    require => [ Exec['provisionAD'], File['SambaOptsFile'], File['kerberosConfig'] ],
+    require => [ Exec['provisionAD'], File['SambaOptsFile'], ],#File['kerberosConfig'] ],
     enable  => true,
   }
 
