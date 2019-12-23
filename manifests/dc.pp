@@ -193,7 +193,7 @@ must be in ["internal", "bindFlat", "bindDLZ"]')
     exec{ 'CleanService':
       path    => '/bin:/sbin:/usr/bin:/usr/sbin',
       unless  => "test -d '${targetdir}/state/sysvol/${realmdowncase}/'",
-      command => $cleanup,
+      command => $::samba::params::cleanup,
       require => Package['SambaDC'],
       before  => Exec['provisionAD'],
       notify  => Service['SambaDC'],
