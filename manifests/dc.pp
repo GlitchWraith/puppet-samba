@@ -235,11 +235,11 @@ must be in ["internal", "bindFlat", "bindDLZ"]')
     }
     exec{ 'stop systemd resolve':
       path    => '/bin:/sbin:/usr/bin:/usr/sbin',
-      command   => 'systemctl stop systemd-resolved; systemctl disable systemd-resolved'
+      command   => '/bin/systemctl stop systemd-resolved; systemctl disable systemd-resolved'
     }
     exec{ 'add fqdn to /etc/hosts':
       path    => '/bin:/sbin:/usr/bin:/usr/sbin',
-      command => "sed -i '1s;^;$facts['hostname']\n;' input",
+      command => "/bin/sed -i '1s;^;$facts['hostname']\n;' input",
       before  => Exec['provisionAD'],
     }   
   }
