@@ -191,7 +191,7 @@ must be in ["internal", "bindFlat", "bindDLZ"]')
         name    => $::samba::params::packagekrb5,
         before  => [ Exec['provisionAD'], Exec['CleanService'] ],
       }
-      package{ 'kerberoskdc':
+      package{ 'kerberoskdc-pam':
         ensure  => 'installed',
         name    => $::samba::params::packagekrb5pam,
         before  => [ Exec['provisionAD'], Exec['CleanService'] ],
@@ -200,9 +200,7 @@ must be in ["internal", "bindFlat", "bindDLZ"]')
         path    => $::samba::params::krbconffile,
         source  =>"file://${::samba::params::sambakrbgenerated}",
         before  => [ Exec['provisionAD'], Exec['CleanService'] ],
-
-      }
-      
+      }      
     }
   }
 
