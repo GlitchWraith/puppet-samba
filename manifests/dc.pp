@@ -206,12 +206,12 @@ must be in ["internal", "bindFlat", "bindDLZ"]')
       package{ 'kerberoskdc':
         ensure  => 'installed',
         name    => $::samba::params::packagekrb5,
-        before  => [ Exec['provisionAD'], Exec['CleanService'] ],
+        before  => [ Exec['provisionAD'], ],#Exec['CleanService'] ],
       }
       package{ 'kerberoskdc-pam':
         ensure  => 'installed',
         name    => $::samba::params::packagekrb5pam,
-        before  => [ Exec['provisionAD'], Exec['CleanService'] ],
+        before  => [ Exec['provisionAD'],], # Exec['CleanService'] ],
       }
       file{'kerberosConfig':
         path    => $::samba::params::krbconffile,
