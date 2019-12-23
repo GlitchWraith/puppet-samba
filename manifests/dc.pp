@@ -234,15 +234,14 @@ must be in ["internal", "bindFlat", "bindDLZ"]')
         require => Exec['provisionAD'],
     }
     exec{ 'stop systemd resolve':
+      path    => '/bin:/sbin:/usr/bin:/usr/sbin',
       command   => 'systemctl stop systemd-resolved; systemctl disable systemd-resolved'
     }
     exec{ 'add fqdn to /etc/hosts':
+      path    => '/bin:/sbin:/usr/bin:/usr/sbin',
       command => "sed -i '1s;^;$facts['hostname']\n;' input",
       before  => Exec['provisionAD'],
-
-    }
-
-   
+    }   
   }
   # Provision the Domain Controler
   exec{ 'provisionAD':
