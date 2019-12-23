@@ -1,7 +1,9 @@
 # default parameters
 
 class samba::params(
-  Boolean $sernetpkgs = false,
+  Boolean $sernetpkgs       = false,
+  Boolean $customresolvconf = false,
+  $additionalnameservers    = [],
 ){
   if $sernetpkgs {
     fail('sernetpkgs is not supported anymore as these packages are EOL')
@@ -85,8 +87,7 @@ class samba::params(
   $sambacreatehome  = '/usr/local/bin/smb-create-home.sh'
 
   
-  $customresolvconf = false
-  $additionalnameservers = []
+  
 
   $logclasslist =  [
     'all',     'tdb',     'printdrivers', 'lanman',   'smb',
