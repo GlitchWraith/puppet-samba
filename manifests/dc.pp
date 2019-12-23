@@ -231,15 +231,17 @@ must be in ["internal", "bindFlat", "bindDLZ"]')
         ensure  => present,
         mode    => '0644',
         content => template("${module_name}/resolv.conf.erb"),
-        require => Exec['provisionAD'],
+        require => [ Exec['unlink'], Exec['stop systemd resolve'],],
     }
     exec{ 'stop systemd resolve':
-      path    => '/bin:/sbin:/usr/bin:/usr/sbin',
-      command   => '/bin/systemctl stop systemd-resolved; systemctl disable systemd-resolved'
+      path      => '/bin:/sbin:/usr/bin:/usr/sbin',
+      command   => '/bin/systemctl stop systemd-resolved; systemctl disable systemd-resolved',
+      require   => [ Exec['provisionAD'], File['SambaCreateHome'], Exec['unlink'], ],
+      before    => [ File['/etc/resolve.conf'], ],
     }
     exec{ 'add fqdn to /etc/hosts':
       path    => '/bin:/sbin:/usr/bin:/usr/sbin',
-      command => "/bin/sed -i '1s;^;$facts['hostname']\n;' input",
+      command => "/bin/sed -i '1s;^;$facts['fqdn']\n;' input",
       before  => Exec['provisionAD'],
     }   
   }
