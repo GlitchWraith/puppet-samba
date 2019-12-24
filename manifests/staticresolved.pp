@@ -36,7 +36,7 @@ class samba::staticresolved(
           path    => $::samba::params::krbconffile,
           source  =>"file://${::samba::params::sambakrbgenerated}",
           require  =>  [ Package['kerberoskdc-pam'], Package['kerberoskdc'],], #  Exec['provisionAD'],
-        }      
+        }    
       }
   }
 
@@ -45,7 +45,7 @@ class samba::staticresolved(
       path    => '/bin:/sbin:/usr/bin:/usr/sbin',
       command => "/bin/sed -i \'1s;^;${ip} ${$facts['fqdn']} ${$facts['hostname']}\\n;\' /etc/hosts",
       onlyif  => "grep -c ${$facts['fqdn']} /etc/hosts",
-    }   
+    }
   }
 
   if $staticresolved {
