@@ -14,7 +14,7 @@ class samba::staticresolved(
   $kerberos               = false,
   $sambakrbgenerated      = '/var/lib/samba/private/krb5.conf',
   $additionalnameservers    = [],
-)inherits ::samba::params{
+)inherits samba::params{
   #include samba::dc
   require samba::dc
 
