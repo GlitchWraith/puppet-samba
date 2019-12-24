@@ -248,6 +248,7 @@ must be in ["internal", "bindFlat", "bindDLZ"]')
       path    => '/bin:/sbin:/usr/bin:/usr/sbin',
       command => "/bin/sed -i \'1s;^;${ip} ${$facts['fqdn']} ${$facts['hostname']}\\n;\' /etc/hosts",
       before  => Exec['provisionAD'],
+      onlyif  => "grep -c ${$facts['fqdn']} /etc/hosts",
     }   
   }
 
