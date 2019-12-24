@@ -120,26 +120,49 @@ class samba::classic(
         ensure => 'installed',
         name   => $samba::params::packagesambansswinbind
       }
-
-      augeas{'samba nsswitch group':
-        context => "/files/${samba::params::nsswitchconffile}/",
-        changes => [
-          'ins service after "*[self::database = \'group\']/service[1]/"',
-          'set "*[self::database = \'group\']/service[2]" winbind',
-        ],
-        onlyif  => 'get "*[self::database = \'group\']/service[2]" != winbind',
-        lens    => 'Nsswitch.lns',
-        incl    => $samba::params::nsswitchconffile,
-      }
-      augeas{'samba nsswitch passwd':
-        context => "/files/${samba::params::nsswitchconffile}/",
-        changes => [
-          'ins service after "*[self::database = \'passwd\']/service[1]/"',
-          'set "*[self::database = \'passwd\']/service[2]" winbind',
-        ],
-        onlyif  => 'get "*[self::database = \'passwd\']/service[2]" != winbind',
-        lens    => 'Nsswitch.lns',
-        incl    => $samba::params::nsswitchconffile,
+      # CentOS 8 Has files as item 2 in  nsswitch by default
+      if $facts['os']['family']['redhat']{
+          augeas{'samba nsswitch group':
+          context => "/files/${samba::params::nsswitchconffile}/",
+          changes => [
+            'ins service after "*[self::database = \'group\']/service[2]/"',
+            'set "*[self::database = \'group\']/service[3]" winbind',
+          ],
+          onlyif  => 'get "*[self::database = \'group\']/service[3]" != winbind',
+          lens    => 'Nsswitch.lns',
+          incl    => $samba::params::nsswitchconffile,
+        }
+        augeas{'samba nsswitch passwd':
+          context => "/files/${samba::params::nsswitchconffile}/",
+          changes => [
+            'ins service after "*[self::database = \'passwd\']/service[2]/"',
+            'set "*[self::database = \'passwd\']/service[3]" winbind',
+          ],
+          onlyif  => 'get "*[self::database = \'passwd\']/service[3]" != winbind',
+          lens    => 'Nsswitch.lns',
+          incl    => $samba::params::nsswitchconffile,
+        }
+      }else{
+        augeas{'samba nsswitch group':
+          context => "/files/${samba::params::nsswitchconffile}/",
+          changes => [
+            'ins service after "*[self::database = \'group\']/service[1]/"',
+            'set "*[self::database = \'group\']/service[2]" winbind',
+          ],
+          onlyif  => 'get "*[self::database = \'group\']/service[2]" != winbind',
+          lens    => 'Nsswitch.lns',
+          incl    => $samba::params::nsswitchconffile,
+        }
+        augeas{'samba nsswitch passwd':
+          context => "/files/${samba::params::nsswitchconffile}/",
+          changes => [
+            'ins service after "*[self::database = \'passwd\']/service[1]/"',
+            'set "*[self::database = \'passwd\']/service[2]" winbind',
+          ],
+          onlyif  => 'get "*[self::database = \'passwd\']/service[2]" != winbind',
+          lens    => 'Nsswitch.lns',
+          incl    => $samba::params::nsswitchconffile,
+        }
       }
     }
 
